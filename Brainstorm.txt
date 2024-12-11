@@ -6,3 +6,6 @@
  
  Algorithms --> brute force, dijkstra, simulated annealing, particle swarm
 
+
+ Example code:
+ Robbe and Jovana: Interrail Road --> https://github.com/robsyc/InterWay
