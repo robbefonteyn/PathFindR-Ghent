@@ -4,7 +4,7 @@
  
  Restrictions --> km, calories, time, river/kanal, siteseeing, parks, visit a specific route, no turnback, speed
  
- Algorithms --> brute force, dijkstra, simulated annealing, particle swarm
+ Algorithms --> brute force, dijkstra, simulated annealing, particle swarm, genetic algorithm
 
 
  Example code:
