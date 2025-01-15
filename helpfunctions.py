@@ -276,7 +276,7 @@ def plot_routes(graph, routes, route_labels=None):
             ax.plot([x1, x2], [y1, y2], color=colors[i % len(colors)], linestyle=styles[i % len(styles)], linewidth=2, label=route_labels[i] if j == 0 else "")
 
     # Add a legend
-    ax.legend(route_labels, loc="lower left")
+    #ax.legend(route_labels, loc="lower left")
     plt.title("Comparison of Routes on the same Graph")
     plt.show()
 
