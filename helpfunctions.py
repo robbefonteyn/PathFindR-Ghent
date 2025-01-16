@@ -241,14 +241,32 @@ def visualize_brute_force(graph, history, best_lengths, target_distance):
         plt.show()
 
 
-def plot_routes(graph, routes, route_labels=None):
+import osmnx as ox
+import networkx as nx
+import matplotlib.pyplot as plt
+from geopy.geocoders import Nominatim
+
+# Function to geocode addresses to coordinates
+def geocode_locations(location_dict):
+    geolocator = Nominatim(user_agent="location_mapper", timeout=10)
+    coords = {}
+    for name, address in location_dict.items():
+        location = geolocator.geocode(address)
+        if location:
+            coords[name] = (location.latitude, location.longitude)
+        else:
+            print(f"Warning: Could not geocode address for {name}: {address}")
+    return coords
+
+def plot_routes(graph, routes, route_labels=None, locations_of_interest=None):
     """
-    Plots multiple routes on a graph for comparison.
+    Plots multiple routes on a graph for comparison, with locations of interest displayed.
 
     Parameters:
     - graph: The NetworkX graph.
     - routes: List of routes (each route is a list of node IDs).
     - route_labels: Optional list of labels for each route.
+    - locations_of_interest: Optional dict of locations as {"location_name": "location_address"}.
     """
     if route_labels is None:
         route_labels = [f"Route {i+1}" for i in range(len(routes))]
@@ -258,9 +276,8 @@ def plot_routes(graph, routes, route_labels=None):
 
     # Define colors for the routes
     colors = ["red", "blue", "green"]
-    styles = ["-", "-", "-"]
 
-    # Plot each route with a different color and style
+    # Plot each route with a different color
     for i, route in enumerate(routes):
         edges = []
         for j in range(len(route) - 1):
@@ -273,22 +290,28 @@ def plot_routes(graph, routes, route_labels=None):
         ]
 
         for x1, y1, x2, y2 in edge_positions:
-            ax.plot([x1, x2], [y1, y2], color=colors[i % len(colors)], linestyle=styles[i % len(styles)], linewidth=2, label=route_labels[i] if j == 0 else "")
+            ax.plot([x1, x2], [y1, y2], color=colors[i % len(colors)], linewidth=2)
 
-    # Add a legend
-    #ax.legend(route_labels, loc="lower left")
-    plt.title("Comparison of Routes on the same Graph")
+    # Plot locations of interest
+    if locations_of_interest:
+        location_coords = geocode_locations(locations_of_interest)
+        for name, (lat, lon) in location_coords.items():
+            node = ox.distance.nearest_nodes(graph, X=lon, Y=lat)
+            x, y = graph.nodes[node]["x"], graph.nodes[node]["y"]
+            ax.scatter(x, y, c="black", s=50, label=name, zorder=5)
+
+    plt.title("Comparison of Routes on the Same Graph")
     plt.show()
 
-
-def plot_routes_separately(graph, routes, route_labels=None):
+def plot_routes_separately(graph, routes, route_labels=None, locations_of_interest=None):
     """
-    Plots each route separately on the graph.
+    Plots each route separately on the graph, with locations of interest displayed.
 
     Parameters:
     - graph: The NetworkX graph.
     - routes: List of routes (each route is a list of node IDs).
     - route_labels: Optional list of labels for each route.
+    - locations_of_interest: Optional dict of locations as {"location_name": "location_address"}.
     """
     if route_labels is None:
         route_labels = [f"Route {i+1}" for i in range(len(routes))]
@@ -318,6 +341,14 @@ def plot_routes_separately(graph, routes, route_labels=None):
         ]
         for x1, y1, x2, y2 in edge_positions:
             ax.plot([x1, x2], [y1, y2], color=colors[i % len(colors)], linewidth=2)
+
+        # Plot locations of interest
+        if locations_of_interest:
+            location_coords = geocode_locations(locations_of_interest)
+            for name, (lat, lon) in location_coords.items():
+                node = ox.distance.nearest_nodes(graph, X=lon, Y=lat)
+                x, y = graph.nodes[node]["x"], graph.nodes[node]["y"]
+                ax.scatter(x, y, c="black", s=50, label=name, zorder=5)
 
         # Add title for each subplot
         ax.set_title(route_labels[i])
