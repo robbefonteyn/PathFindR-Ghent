@@ -1,4 +1,4 @@
-# STMO Project: Running Route Optimization in Ghent
+# PathFindR Ghent: Running Route Optimization in Ghent
 
 ## Project Overview
 
